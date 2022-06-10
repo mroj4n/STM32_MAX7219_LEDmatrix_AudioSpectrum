@@ -113,3 +113,4 @@ void write_string (char *str)
 		HAL_Delay (500);
 	}
 }
+

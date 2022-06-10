@@ -40,7 +40,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
- ADC_HandleTypeDef hadc1;
+ADC_HandleTypeDef hadc1;
 
 SPI_HandleTypeDef hspi2;
 
@@ -57,6 +57,8 @@ static void MX_ADC1_Init(void);
 static void MX_USART2_UART_Init(void);
 static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
+void FFT_output_shrinker(); // averages the fft array to 8 equal segments and averages to show peak.
+void displayfft();
 
 /* USER CODE END PFP */
 
@@ -75,24 +77,23 @@ uint8_t display_matrix[8] =
         00000001};
 
 #define BUFFER_SIZE 2048
-float32_t testInput_f32_10khz[BUFFER_SIZE];
-float32_t testOutput[BUFFER_SIZE/2];
-uint32_t fftSize = 1024;
+float32_t Adc_input[BUFFER_SIZE];
+float32_t FFT_output[BUFFER_SIZE / 2];
+float32_t smol_FFT_out[8];
+uint32_t fftSize = BUFFER_SIZE / 2;
 uint32_t ifftFlag = 0;
 uint32_t doBitReverse = 1;
 arm_cfft_instance_f32 varInstCfftF32;
 uint32_t refIndex = 213, testIndex = 0;
-
-
 
 uint32_t g_ADCValue;
 int i;
 /* USER CODE END 0 */
 
 /**
-  * @brief  The application entry point.
-  * @retval int
-  */
+ * @brief  The application entry point.
+ * @retval int
+ */
 int main(void)
 {
   /* USER CODE BEGIN 1 */
@@ -151,25 +152,25 @@ int main(void)
     {
       for (i = 0; i < BUFFER_SIZE; i++)
       {
-    	  testInput_f32_10khz[i] = HAL_ADC_GetValue(&hadc1);
-    	 
+        Adc_input[i] = HAL_ADC_GetValue(&hadc1); // 0-4095
       }
+
       configtime = HAL_GetTick() - configtime;
       g_ADCValue = HAL_ADC_GetValue(&hadc1); // 4096-0 returns
       fft();
+      FFT_output_shrinker();
+      displayfft();
       g_MeasurementNumber++;
     }
 
-//	for (int i = 0; i < 8; ++i)
-//	{
-//		write_max(i + 1, 0x00);
-//	}
-    //write_string("ABCD");
+    //	for (int i = 0; i < 8; ++i)
+    //	{
+    //		write_max(i + 1, 0x00);
+    //	}
+    // write_string("ABCD");
 
-    HAL_Delay(500);
+    HAL_Delay(10);
     HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
-
-
 
     /* USER CODE END WHILE */
 
@@ -179,22 +180,22 @@ int main(void)
 }
 
 /**
-  * @brief System Clock Configuration
-  * @retval None
-  */
+ * @brief System Clock Configuration
+ * @retval None
+ */
 void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 
   /** Configure the main internal regulator output voltage
-  */
+   */
   __HAL_RCC_PWR_CLK_ENABLE();
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
   /** Initializes the RCC Oscillators according to the specified parameters
-  * in the RCC_OscInitTypeDef structure.
-  */
+   * in the RCC_OscInitTypeDef structure.
+   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
   RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
@@ -211,9 +212,8 @@ void SystemClock_Config(void)
   }
 
   /** Initializes the CPU, AHB and APB buses clocks
-  */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+   */
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
@@ -226,10 +226,10 @@ void SystemClock_Config(void)
 }
 
 /**
-  * @brief ADC1 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief ADC1 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_ADC1_Init(void)
 {
 
@@ -244,7 +244,7 @@ static void MX_ADC1_Init(void)
   /* USER CODE END ADC1_Init 1 */
 
   /** Configure the global features of the ADC (Clock, Resolution, Data Alignment and number of conversion)
-  */
+   */
   hadc1.Instance = ADC1;
   hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
   hadc1.Init.Resolution = ADC_RESOLUTION_12B;
@@ -263,7 +263,7 @@ static void MX_ADC1_Init(void)
   }
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
-  */
+   */
   sConfig.Channel = ADC_CHANNEL_0;
   sConfig.Rank = 1;
   sConfig.SamplingTime = ADC_SAMPLETIME_28CYCLES;
@@ -274,14 +274,13 @@ static void MX_ADC1_Init(void)
   /* USER CODE BEGIN ADC1_Init 2 */
 
   /* USER CODE END ADC1_Init 2 */
-
 }
 
 /**
-  * @brief SPI2 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief SPI2 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_SPI2_Init(void)
 {
 
@@ -312,14 +311,13 @@ static void MX_SPI2_Init(void)
   /* USER CODE BEGIN SPI2_Init 2 */
 
   /* USER CODE END SPI2_Init 2 */
-
 }
 
 /**
-  * @brief USART2 Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief USART2 Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_USART2_UART_Init(void)
 {
 
@@ -345,14 +343,13 @@ static void MX_USART2_UART_Init(void)
   /* USER CODE BEGIN USART2_Init 2 */
 
   /* USER CODE END USART2_Init 2 */
-
 }
 
 /**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
+ * @brief GPIO Initialization Function
+ * @param None
+ * @retval None
+ */
 static void MX_GPIO_Init(void)
 {
   GPIO_InitTypeDef GPIO_InitStruct = {0};
@@ -364,7 +361,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, clock_Pin|LD2_Pin|cs_Pin|DATA_Pin, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOA, clock_Pin | LD2_Pin | cs_Pin | DATA_Pin, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : B1_Pin */
   GPIO_InitStruct.Pin = B1_Pin;
@@ -373,50 +370,96 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(B1_GPIO_Port, &GPIO_InitStruct);
 
   /*Configure GPIO pins : clock_Pin LD2_Pin cs_Pin DATA_Pin */
-  GPIO_InitStruct.Pin = clock_Pin|LD2_Pin|cs_Pin|DATA_Pin;
+  GPIO_InitStruct.Pin = clock_Pin | LD2_Pin | cs_Pin | DATA_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
 }
 
 /* USER CODE BEGIN 4 */
 void fft(void)
 {
   arm_status status;
-  float32_t maxValue;
   status = ARM_MATH_SUCCESS;
-  status=arm_cfft_init_f32(&varInstCfftF32,fftSize);
+  status = arm_cfft_init_f32(&varInstCfftF32, fftSize);
   /* Process the data through the CFFT/CIFFT module */
-  arm_cfft_f32(&varInstCfftF32, testInput_f32_10khz, ifftFlag, doBitReverse);
+  arm_cfft_f32(&varInstCfftF32, Adc_input, ifftFlag, doBitReverse);
   /* Process the data through the Complex Magnitude Module for
   calculating the magnitude at each bin */
-  arm_cmplx_mag_f32(testInput_f32_10khz, testOutput, fftSize);
-  /* Calculates maxValue and returns corresponding BIN value */
-  arm_max_f32(testOutput, fftSize, &maxValue, &testIndex);
-  status = (testIndex != refIndex) ? ARM_MATH_TEST_FAILURE : ARM_MATH_SUCCESS;
+  arm_cmplx_mag_f32(Adc_input, FFT_output, fftSize);
+  FFT_output[0] = FFT_output[1];
 
-  if (status != ARM_MATH_SUCCESS)
+  /* Calculates maxValue and returns corresponding BIN value */
+
+  status = (testIndex != refIndex) ? ARM_MATH_TEST_FAILURE : ARM_MATH_SUCCESS;
+}
+
+void FFT_output_shrinker()
+{
+  int count = 0;
+  float32_t temp_average = 0.0;
+  for (int j = 0; j < 8; j++)
   {
-#if defined (SEMIHOSTING)
-    printf("FAILURE\n");
-                                /* main function does not return */
-#endif
+    for (int i = count, k = 0; k < (BUFFER_SIZE / 2) / 8 / 2; i++, k++)
+    {
+      temp_average = temp_average + FFT_output[i];
+    }
+    temp_average = temp_average / ((BUFFER_SIZE / 2) / 8 / 2);
+    smol_FFT_out[j] = temp_average;
+    temp_average = 0.0;
+    count = count + ((BUFFER_SIZE / 2) / 8 / 2);
   }
-  else
+}
+
+void displayfft()
+{
+  float32_t max_in_smol_fft = smol_FFT_out[0];
+  for (int j = 0; j < 8; j++)
   {
-#if defined (SEMIHOSTING)
-    printf("SUCCESS\n");                          /* main function does not return */
-#endif
+    if (smol_FFT_out[j] > max_in_smol_fft)
+      max_in_smol_fft = smol_FFT_out[j];
   }
+  int OldRange = ((int)max_in_smol_fft + 1 - 0);
+  int NewRange = (8 - 0);
+  int smol_FFT_out_in_8_range[8];
+
+  for (int j = 0; j < 8; j++)
+  {
+    smol_FFT_out_in_8_range[j] = (((int)smol_FFT_out[j] - 0) * NewRange) / OldRange + 0;
+  }
+
+  uint8_t fft_display[8] =
+  {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0};
+  for (int i = 0; i < 8; i++)
+  {
+    for (int j = 0; j < smol_FFT_out_in_8_range[i]; j++)
+    {
+      fft_display[i] = (fft_display[i] + pow(0x2,j));
+      
+    }
+  }
+ display_matrix[0] = (uint8_t)fft_display[0];
+  for (int i = 1; i < 9; i++)
+  {
+    write_max(i, (uint8_t)fft_display[i - 1]);
+  }
+  //	while (*str)
+  //	{
+  //		for(int i=1;i<9;i++)
+  //			   {
+  //			       write_max (i,disp1ay[(*str - 55)][i-1]);
+  //			   }
+  //		*str++;
+  //		HAL_Delay (500);
+  //	}
 }
 /* USER CODE END 4 */
 
 /**
-  * @brief  This function is executed in case of error occurrence.
-  * @retval None
-  */
+ * @brief  This function is executed in case of error occurrence.
+ * @retval None
+ */
 void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
@@ -428,14 +471,14 @@ void Error_Handler(void)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
-  * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
-  * @param  file: pointer to the source file name
-  * @param  line: assert_param error line source number
-  * @retval None
-  */
+ * @brief  Reports the name of the source file and the source line number
+ *         where the assert_param error has occurred.
+ * @param  file: pointer to the source file name
+ * @param  line: assert_param error line source number
+ * @retval None
+ */
 void assert_failed(uint8_t *file, uint32_t line)
 {
   /* USER CODE BEGIN 6 */
