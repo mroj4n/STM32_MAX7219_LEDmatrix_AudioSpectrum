@@ -1,0 +1,4 @@
+../Core/Src/max_led_.c:76:6:write_byte	24	static
+../Core/Src/max_led_.c:87:6:write_max	16	static
+../Core/Src/max_led_.c:95:6:max_init	8	static
+../Core/Src/max_led_.c:104:6:write_string	24	static
