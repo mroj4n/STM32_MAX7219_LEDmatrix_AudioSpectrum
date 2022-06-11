@@ -59,7 +59,7 @@ static void MX_SPI2_Init(void);
 /* USER CODE BEGIN PFP */
 void FFT_output_shrinker(); // averages the fft array to 8 equal segments and averages to show peak.
 void displayfft();
-
+uint8_t display_column_filler();
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -76,10 +76,11 @@ uint8_t display_matrix[8] =
         00000001,
         00000001};
 
-#define BUFFER_SIZE 2048
+#define BUFFER_SIZE 512
 float32_t Adc_input[BUFFER_SIZE];
 float32_t FFT_output[BUFFER_SIZE / 2];
 float32_t smol_FFT_out[8];
+int smol_FFT_out_in_8_range[8];
 uint32_t fftSize = BUFFER_SIZE / 2;
 uint32_t ifftFlag = 0;
 uint32_t doBitReverse = 1;
@@ -153,6 +154,8 @@ int main(void)
       for (i = 0; i < BUFFER_SIZE; i++)
       {
         Adc_input[i] = HAL_ADC_GetValue(&hadc1); // 0-4095
+        g_ADCValue = Adc_input[i];
+
       }
 
       configtime = HAL_GetTick() - configtime;
@@ -422,27 +425,29 @@ void displayfft()
   }
   int OldRange = ((int)max_in_smol_fft + 1 - 0);
   int NewRange = (8 - 0);
-  int smol_FFT_out_in_8_range[8];
+  
 
   for (int j = 0; j < 8; j++)
   {
     smol_FFT_out_in_8_range[j] = (((int)smol_FFT_out[j] - 0) * NewRange) / OldRange + 0;
   }
 
-  uint8_t fft_display[8] =
-  {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0};
-  for (int i = 0; i < 8; i++)
-  {
-    for (int j = 0; j < smol_FFT_out_in_8_range[i]; j++)
-    {
-      fft_display[i] = (fft_display[i] + pow(0x2,j));
+  // uint8_t fft_display[8] =
+  // {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0};
+  // for (int i = 0; i < 8; i++)
+  // {
+  //   // for (int j = 0; j < smol_FFT_out_in_8_range[i]; j++)
+  //   // {
+  //   //   fft_display[i] = (fft_display[i] + pow(0x2,j));
       
-    }
-  }
- display_matrix[0] = (uint8_t)fft_display[0];
+  //   // }
+  //   display_column_filler(i);
+  // }
+
   for (int i = 1; i < 9; i++)
   {
-    write_max(i, (uint8_t)fft_display[i - 1]);
+    //write_max(i, (uint8_t)display_matrix[i - 1]);
+    write_max(i, display_column_filler(i-1));
   }
   //	while (*str)
   //	{
@@ -454,6 +459,48 @@ void displayfft()
   //		HAL_Delay (500);
   //	}
 }
+
+uint8_t display_column_filler(int i){
+ switch(smol_FFT_out_in_8_range[i]){
+        case 0:
+            return 0x0;
+            break;
+
+        case 1:
+            return 0x1;
+            break;
+
+        case 2:
+            return 0x3;
+            break;
+
+        case 3:
+            return 0x7;
+            break;
+
+        case 4:
+            return 0xF;
+            break;
+
+        case 5:
+            return 0x1F;
+            break;
+
+        case 6:
+             return 0x3F;
+            break;
+
+        case 7:
+            return 0x7F;
+            break;    
+
+        case 8:
+            return 0xFF;
+            break;
+    }
+    return 0x0;
+}
+
 /* USER CODE END 4 */
 
 /**
