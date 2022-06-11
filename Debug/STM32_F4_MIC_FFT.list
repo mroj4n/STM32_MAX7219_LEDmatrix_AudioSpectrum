@@ -441,7 +441,7 @@ int main(void)
  8000578:	2b08      	cmp	r3, #8
  800057a:	ddeb      	ble.n	8000554 <main+0x4c>
   }
-  write_string("ABCD");
+  write_string("WELCOME");
  800057c:	4839      	ldr	r0, [pc, #228]	; (8000664 <main+0x15c>)
  800057e:	f000 fc07 	bl	8000d90 <write_string>
 

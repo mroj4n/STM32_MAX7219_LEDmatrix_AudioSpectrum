@@ -142,7 +142,7 @@ int main(void)
   {
     write_max(i, display_matrix[i - 1]);
   }
-  write_string("ABCD");
+  write_string("WELCOME");
 
   double fft_out[BUFFER_SIZE];
 
