@@ -160,6 +160,7 @@ int main(void)
       {
         Adc_input[i] = HAL_ADC_GetValue(&hadc1); // 0-4095
         g_ADCValue = Adc_input[i];
+        delay_us(500);
 
       }
 
@@ -459,14 +460,14 @@ void FFT_output_shrinker()
   float32_t temp_average = 0.0;
   for (int j = 0; j < 8; j++)
   {
-    for (int i = count, k = 0; k < (BUFFER_SIZE / 2) / 8 / 2; i++, k++)
+    for (int i = count, k = 0; k < (BUFFER_SIZE/4) / 8 / 2; i++, k++)
     {
       temp_average = temp_average + FFT_output[i];
     }
-    temp_average = temp_average / ((BUFFER_SIZE / 2) / 8 / 2);
+    temp_average = temp_average / ((BUFFER_SIZE/4) / 8 / 2);
     smol_FFT_out[j] = temp_average;
     temp_average = 0.0;
-    count = count + ((BUFFER_SIZE / 2) / 8 / 2);
+    count = count + ((BUFFER_SIZE/4) / 8 / 2);
   }
 }
 
