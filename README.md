@@ -12,7 +12,12 @@ It is using:
 - Shrinking the FFT result to 8 from 1024
 - Converting shrunken FFT to range 0-8
 
+## Connections
+MAX7219 DIN - GPIO_PA7
+MAX7219 CS  - GPIO_PA6
+MAX7219 CLK - GPIO_PA4
 
+MAX4466 OUT - ADC_PA0
 ____________________________________________
 This code uses techniques demonstrated in the following tutorials:
 
