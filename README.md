@@ -3,7 +3,7 @@ A code that detects Audio through a mic and displays its audio spectrum in an 8x
 It is using:
 - Input: MAX4466 Microphone Preamplifiers
 - Output: MAX7219 LED dot matrix
-- Processor: NUCLEO-F446RE
+- Discover Board: NUCLEO-F446RE
 
 
 ## Code process
