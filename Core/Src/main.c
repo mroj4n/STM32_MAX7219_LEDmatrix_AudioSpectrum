@@ -69,16 +69,7 @@ void delay_us (uint16_t us); // delay (1)=10ns so use delay(100) for us
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 // ADC_HandleTypeDef hadc1;
-uint8_t display_matrix[8] =
-    {
-        00000001,
-        00000001,
-        00000001,
-        00000001,
-        00000001,
-        00000001,
-        00000001,
-        00000001};
+
 
 #define BUFFER_SIZE 2048
 float32_t Adc_input[BUFFER_SIZE];
@@ -91,7 +82,7 @@ uint32_t doBitReverse = 1;
 arm_cfft_instance_f32 varInstCfftF32;
 uint32_t refIndex = 213, testIndex = 0;
 
-uint32_t g_ADCValue;
+
 int i;
 /* USER CODE END 0 */
 
@@ -129,19 +120,13 @@ int main(void)
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   max_init();
-  uint32_t configtime = HAL_GetTick();
-  uint32_t g_ADCValueARRAY[BUFFER_SIZE];
-  int g_MeasurementNumber;
+
 
   if (HAL_ADC_Start(&hadc1) != HAL_OK)
   {
     Error_Handler();
   }
 
-  for (i = 1; i < 9; i++)
-  {
-    write_max(i, display_matrix[i - 1]);
-  }
   write_string("WELCOME");
 
   double fft_out[BUFFER_SIZE];
@@ -153,31 +138,21 @@ int main(void)
   HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
   while (1)
   {
-    configtime = HAL_GetTick();
     if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK)
     {
       for (i = 0; i < BUFFER_SIZE; i++)
       {
         Adc_input[i] = HAL_ADC_GetValue(&hadc1); // 0-4095
-        g_ADCValue = Adc_input[i];
         delay_us(500);
 
       }
 
-      configtime = HAL_GetTick() - configtime;
-      g_ADCValue = HAL_ADC_GetValue(&hadc1); // 4096-0 returns
       fft();
       FFT_output_shrinker();
       displayfft();
-      g_MeasurementNumber++;
       delay_us(5000);
     }
 
-    //	for (int i = 0; i < 8; ++i)
-    //	{
-    //		write_max(i + 1, 0x00);
-    //	}
-    // write_string("ABCD");
 
     HAL_Delay(10);
     HAL_GPIO_TogglePin(LD2_GPIO_Port, LD2_Pin);
@@ -488,32 +463,11 @@ void displayfft()
     smol_FFT_out_in_8_range[j] = (((int)smol_FFT_out[j] - 0) * NewRange) / OldRange + 0;
   }
 
-  // uint8_t fft_display[8] =
-  // {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0};
-  // for (int i = 0; i < 8; i++)
-  // {
-  //   // for (int j = 0; j < smol_FFT_out_in_8_range[i]; j++)
-  //   // {
-  //   //   fft_display[i] = (fft_display[i] + pow(0x2,j));
-      
-  //   // }
-  //   display_column_filler(i);
-  // }
-
   for (int i = 1; i < 9; i++)
   {
-    //write_max(i, (uint8_t)display_matrix[i - 1]);
     write_max(i, display_column_filler(i-1));
   }
-  //	while (*str)
-  //	{
-  //		for(int i=1;i<9;i++)
-  //			   {
-  //			       write_max (i,disp1ay[(*str - 55)][i-1]);
-  //			   }
-  //		*str++;
-  //		HAL_Delay (500);
-  //	}
+
 }
 
 uint8_t display_column_filler(int i){

@@ -80,9 +80,7 @@ void Error_Handler(void);
 #define SWO_Pin GPIO_PIN_3
 #define SWO_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
-// define MAX7219 commands (for convenience)
-#define MAX7219_NO_DECODE 0b00000000
-#define MAX7219_7SEG_DECODE 0b11111111
+
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

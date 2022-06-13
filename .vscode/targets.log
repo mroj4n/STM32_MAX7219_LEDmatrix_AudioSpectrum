@@ -8,10 +8,12 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Jun 10 14:29:03 2022
+# Make data base, printed on Mon Jun 13 22:24:29 2022
 
 # Variables
 
+# environment
+FPS_BROWSER_APP_PROFILE_STRING = Internet Explorer
 # environment
 SYSTEMDRIVE = C:
 # environment
@@ -23,9 +25,9 @@ VBOX_MSI_INSTALL_PATH = C:\Program Files\Oracle\VirtualBox\
 # environment
 LOCALAPPDATA = C:\Users\MD\AppData\Local
 # environment
-VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-872d8e75-2540-4bc1-b4e7-a99e70cc9471-sock
+VSCODE_IPC_HOOK_EXTHOST = \\.\pipe\vscode-ipc-0defdc8c-e6cd-4b3f-80c2-ea4390931e84-sock
 # environment
-VSCODE_CWD = C:\Users\MD\OneDrive - Politechnika Wroclawska\WroTech Docs\Embedded systems\Project\STM32_FFT_MIC
+VSCODE_CWD = C:\Users\MD\OneDrive - Politechnika Wroclawska\WroTech Docs\Embedded systems\Project_Git
 # environment
 CHOCOLATEYINSTALL = C:\ProgramData\chocolatey
 # environment
@@ -39,9 +41,11 @@ MAKE_COMMAND := C:/ProgramData/chocolatey/lib/make/tools/install/bin/make.exe
 # automatic
 @D = $(patsubst %/,%,$(patsubst %\,%,$(dir $@)))
 # environment
-CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_7600_HYESCZZOJHLSUFWE
+CHROME_CRASHPAD_PIPE_NAME = \\.\pipe\crashpad_3844_NVNBCESXKXSCSUXR
 # environment
 ONEDRIVECOMMERCIAL = C:\Users\MD\OneDrive - Politechnika Wroclawska
+# environment
+FPS_BROWSER_USER_PROFILE_STRING = Default
 # environment
 VSCODE_HANDLES_UNCAUGHT_ERRORS = true
 # default
@@ -71,7 +75,7 @@ MAKEFLAGS = pqrR
 # environment
 ONEDRIVE = C:\Users\MD\OneDrive - Politechnika Wroclawska
 # makefile
-CURDIR := c:/Users/MD/OneDrive - Politechnika Wroclawska/WroTech Docs/Embedded systems/Project/STM32_FFT_MIC/STM32_F4_MIC_FFT
+CURDIR := c:/Users/MD/OneDrive - Politechnika Wroclawska/WroTech Docs/Embedded systems/Project_Git/STM32_MAX7219_LEDmatrix_AudioSpectrum
 # environment
 VSCODE_PIPE_LOGGING = true
 # environment
@@ -95,7 +99,7 @@ MAKEFILE_LIST :=
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
-VSCODE_PID = 7600
+VSCODE_PID = 3844
 # environment
 CLION = C:\Program Files\JetBrains\CLion 2022.1.2\bin;
 # automatic
@@ -207,7 +211,7 @@ PROCESSOR_REVISION = 9e0a
 # environment
 PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 158 Stepping 10, GenuineIntel
 # variable set hash-table stats:
-# Load=97/1024=9%, Rehash=0, Collisions=9/121=7%
+# Load=99/1024=10%, Rehash=0, Collisions=10/123=8%
 
 # Pattern-specific Variable Values
 
@@ -215,9 +219,9 @@ PROCESSOR_IDENTIFIER = Intel64 Family 6 Model 158 Stepping 10, GenuineIntel
 
 # Directories
 
-# . (key c:/Users/MD/OneDrive - Politechnika Wroclawska/WroTech Docs/Embedded systems/Project/STM32_FFT_MIC/STM32_F4_MIC_FFT, mtime 1654864021): 17 files, no impossibilities.
+# . (key c:/Users/MD/OneDrive - Politechnika Wroclawska/WroTech Docs/Embedded systems/Project_Git/STM32_MAX7219_LEDmatrix_AudioSpectrum, mtime 1655151838): 20 files, no impossibilities.
 
-# 17 files, no impossibilities in 1 directories.
+# 20 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -274,12 +278,12 @@ GNUmakefile:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 24 / storage = 290 B / avg = 12 B
-# current buf: size = 8174 B / used = 290 B / count = 24 / avg = 12 B
+# strcache buffers: 1 (0) / strings = 27 / storage = 318 B / avg = 11 B
+# current buf: size = 8174 B / used = 318 B / count = 27 / avg = 11 B
 
-# strcache performance: lookups = 27 / hit rate = 11%
+# strcache performance: lookups = 30 / hit rate = 10%
 # hash-table stats:
-# Load=24/8192=0%, Rehash=0, Collisions=0/27=0%
-# Finished Make data base on Fri Jun 10 14:29:03 2022
+# Load=27/8192=0%, Rehash=0, Collisions=0/30=0%
+# Finished Make data base on Mon Jun 13 22:24:29 2022
 
  
