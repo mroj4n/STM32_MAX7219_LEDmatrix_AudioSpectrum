@@ -13,11 +13,11 @@ It is using:
 - Converting shrunken FFT to range 0-8
 
 ## Connections
-MAX7219 DIN - GPIO_PA7
-MAX7219 CS  - GPIO_PA6
-MAX7219 CLK - GPIO_PA4
+- MAX7219 DIN - GPIO_PA7
+- MAX7219 CS  - GPIO_PA6
+- MAX7219 CLK - GPIO_PA4
 
-MAX4466 OUT - ADC_PA0
+- MAX4466 OUT - ADC_PA0
 ____________________________________________
 This code uses techniques demonstrated in the following tutorials:
 
