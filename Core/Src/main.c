@@ -454,6 +454,7 @@ void displayfft()
     if (smol_FFT_out[j] > max_in_smol_fft)
       max_in_smol_fft = smol_FFT_out[j];
   }
+	//max_in_smol_fft=4095; //you can make this value to be 4095 to have more precise results however i use the for loop to have better visibility
   int OldRange = ((int)max_in_smol_fft + 1 - 0);
   int NewRange = (8 - 0);
   
