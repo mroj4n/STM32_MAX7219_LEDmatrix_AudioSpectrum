@@ -1,0 +1,6 @@
+.settings/
+.vscode/
+fft_out.csv
+STM32_F4_MIC_FFT Debug.launch
+STM32F446RETX_FLASH.ld
+STM32F446RETX_RAM.ld
